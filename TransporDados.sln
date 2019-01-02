@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransporDados", "TransporDados\TransporDados.csproj", "{AAAC6049-E186-4982-AA9C-E8E9CE8A7644}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAAC6049-E186-4982-AA9C-E8E9CE8A7644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAAC6049-E186-4982-AA9C-E8E9CE8A7644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAAC6049-E186-4982-AA9C-E8E9CE8A7644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAAC6049-E186-4982-AA9C-E8E9CE8A7644}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {588E93FF-F0CA-45AF-85CC-73D4F9B15EA1}
+	EndGlobalSection
+EndGlobal
