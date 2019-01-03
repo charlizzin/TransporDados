@@ -8,7 +8,7 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace ExportaDados
 {
-    public class CidadesS
+    public class CidadesS1
     {
         public string CodCidade { get; set; }
         public string Cidade { get; set; }
