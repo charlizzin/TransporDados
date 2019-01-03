@@ -13,24 +13,43 @@ namespace ExportaDados
 {
     class Program
     {
-        static readonly string Insert = "INSERT INTO CIDADES (CODCIDADE, CIDADE, ESTADO, CODMUNICIPIO, CODSIAFI)VALUES (@CODCIDADE, @CIDADE, @ESTADO, @CODMUNICIPIO, @CODSIAFI)";
-        static readonly string conexao1 = ConfigurationManager.ConnectionStrings["strFirebirdPrincipal"].ConnectionString;
-        static readonly string conexao2 = ConfigurationManager.ConnectionStrings["strFirebirdPrincipal"].ConnectionString;
         static void Main(string[] args)
         {
-            FbConnection fbConnectionP = new FbConnection(conexao1);
-            FbConnection fbConnectionS = new FbConnection(conexao2);
-            IEnumerable cidadesP1 = fbConnectionP.Query<CidadesP>("Select * from cidades order by codcidade");
-            IEnumerable cidadesP2 = fbConnectionS.Query<CidadesS>("Select * from cidades order by codcidade");
-            IEnumerable cidadesP3 = fbConnectionP.Query<CidadesP>("Select * from cidades order by codcidade");
+            CidadesP cidades = new CidadesP();
+            cidades.InsertCidade();
 
-            List<CidadesP> cidadesPs = new List<CidadesP>();
-            foreach (CidadesP item in cidadesP1)
-            {
-                cidadesPs.Add(item);
-            }
+            #region
+            //FbConnection fbConnectionP = new FbConnection(conexao1);
+            //FbConnection fbConnectionS = new FbConnection(conexao2);
+            //IEnumerable cidadesP1 = fbConnectionP.Query<CidadesP>("Select * from cidades order by codcidade");
+            //IEnumerable cidadesP2 = fbConnectionS.Query<CidadesS>("Select * from cidades order by codcidade");
 
+            //List<CidadesP> cidadesPs = new List<CidadesP>();
+            //List<CidadesP> cidadesP3 = new List<CidadesP>();
+            //foreach (CidadesP itemP in cidadesP1)
+            //{
+            //    cidadesPs.Add(itemP);
+            //    cidadesP3.Add(itemP);
+            //}
 
+            //List<CidadesS> cidadesS = new List<CidadesS>();
+            //foreach (CidadesS itemS in cidadesP2)
+            //{
+            //    cidadesS.Add(itemS);
+            //}
+
+            //foreach (var item1 in cidadesPs)
+            //{
+            //    foreach (var item2 in cidadesS)
+            //    {
+            //        if (item1.CodCidade.Equals(item2.CodCidade))
+            //        {
+            //            cidadesP3.Remove(item1);
+            //            break;
+            //        }
+            //    }
+            //}
+            #endregion
             Console.ReadKey();
         }
     }

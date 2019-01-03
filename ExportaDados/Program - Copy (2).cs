@@ -20,12 +20,12 @@
 //            {
 //                conn.Open();
 //                var resulCidade = conn.Query("Select * from cidades").ToList();
-//                Cidades cidade = new Cidades();
+//                CidadesP cidade = new CidadesP();
 //                foreach (dynamic item in resulCidade)
 //                {
 //                    try
 //                    {
-//                        cidade = new Cidades
+//                        cidade = new CidadesP
 //                        {
 //                            CodCidade = item.CODCIDADE,
 //                            Cidade = item.CIDADE,

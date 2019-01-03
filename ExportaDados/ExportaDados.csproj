@@ -47,8 +47,6 @@
     <Compile Include="CidadesS.cs" />
     <Compile Include="CidadesP.cs" />
     <Compile Include="Conexao.cs" />
-    <Compile Include="Program - Copy %282%29.cs" />
-    <Compile Include="Program - Copy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -11,7 +11,7 @@ namespace ExportaDados
     public class Conexao
     {
         public readonly string conexao1 = ConfigurationManager.ConnectionStrings["strFirebirdPrincipal"].ConnectionString;
-        public readonly string conexao2 = ConfigurationManager.ConnectionStrings["strFirebirdPrincipal"].ConnectionString;
+        public readonly string conexao2 = ConfigurationManager.ConnectionStrings["strFirebirdSecundaria"].ConnectionString;
 
         public FbConnection GetFbConnection1()
         {
