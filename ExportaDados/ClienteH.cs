@@ -136,11 +136,17 @@ namespace ExportaDados
     public class ClienteS : ClienteH { }
     public class ClienteRepository
     {
-        private readonly string sqlCliente = "Select * from cliente order by codcliente";
+        private readonly string sqlCliente = "Select * from cliente where cliente.dt_cadastro = @data order by codcliente";
+        private readonly string dataHoje = DateTime.Today.Date.ToString("dd/MM/yyyy").Replace("/", ".");
+
 
         public List<ClienteP> GetListaClientesP()
         {
-            IEnumerable ClienteP = new FbConnection(new Conexao().conexao1).Query<ClienteP>(sqlCliente);
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
+            IEnumerable ClienteP = new FbConnection(new Conexao().conexao1).Query<ClienteP>(sqlCliente, new { data = dataHoje });
             List<ClienteP> listaClientes = new List<ClienteP>();
             foreach (ClienteP itemP in ClienteP)
             {
@@ -150,7 +156,11 @@ namespace ExportaDados
         }
         public List<ClienteS> GetListaClientesS()
         {
-            IEnumerable ClienteS = new FbConnection(new Conexao().conexao2).Query<ClienteS>(sqlCliente);
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
+            IEnumerable ClienteS = new FbConnection(new Conexao().conexao2).Query<ClienteS>(sqlCliente, new { data = dataHoje });
             List<ClienteS> listaClientes = new List<ClienteS>();
             foreach (ClienteS itemS in ClienteS)
             {

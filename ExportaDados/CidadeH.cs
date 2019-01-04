@@ -27,6 +27,10 @@ namespace ExportaDados
 
         public List<CidadesP> GetListaCidadesP()
         {
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
             IEnumerable CidadeP = new FbConnection(new Conexao().conexao1).Query<CidadesP>(sqlCidade);
             List<CidadesP> listaCidades = new List<CidadesP>();
             foreach (CidadesP itemP in CidadeP)

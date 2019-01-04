@@ -4,8 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExportaDados
 {
@@ -221,16 +219,25 @@ namespace ExportaDados
         public double? Percglpderivado { get; set; } // double precision
         public double? Percgasnatural { get; set; } // double precision
         public double? Percgasnaturalinternacional { get; set; } // double precision
+        public int? Idimpostoprodutojava { get; set; } // integer
+
     }
     public class ProdutoP : ProdutoH { }
     public class ProdutoS : ProdutoH { }
     public class ProdutoRepository
     {
-        private readonly string sqlProduto = "Select * from produto order by codprod";
+        private readonly string sqlProduto = "Select * from produto where produto.dt_cadastro = @data order by codprod";
+        private readonly string dataHoje = DateTime.Today.Date.ToString("dd/MM/yyyy").Replace("/", ".");
+
 
         public List<ProdutoP> GetListaProdutosP()
         {
-            IEnumerable ProdutoP = new FbConnection(new Conexao().conexao1).Query<ProdutoP>(sqlProduto);
+
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
+            IEnumerable ProdutoP = new FbConnection(new Conexao().conexao1).Query<ProdutoP>(sqlProduto, new { data = dataHoje });
             List<ProdutoP> listaProdutos = new List<ProdutoP>();
             foreach (ProdutoP itemP in ProdutoP)
             {
@@ -240,7 +247,11 @@ namespace ExportaDados
         }
         public List<ProdutoS> GetListaProdutosS()
         {
-            IEnumerable ProdutoS = new FbConnection(new Conexao().conexao2).Query<ProdutoS>(sqlProduto);
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
+            IEnumerable ProdutoS = new FbConnection(new Conexao().conexao2).Query<ProdutoS>(sqlProduto, new { data = dataHoje });
             List<ProdutoS> listaProdutos = new List<ProdutoS>();
             foreach (ProdutoS itemS in ProdutoS)
             {
@@ -274,7 +285,7 @@ namespace ExportaDados
         }
         public void InsertProduto()
         {
-            #region Insert
+            #region Insert Produto
             string Insert = "INSERT INTO PRODUTO (CODPROD, ATIVO, REFERENCIA, REFFABRICANTE, DESCRICAO, " +
     "DESCRICAO2, DESCRICAO3, CODGRUPO, CODSUBGRUPO, TIPOPROD, ESTMINIMO, DIASESTMINIMO, " +
     "ESTMAXIMO, DIASESTMAXIMO, CODCLASFIS, ALIQIPI, ALIQISS, ALIQICMSREG00, BASEICMSREG00, " +
@@ -306,7 +317,7 @@ namespace ExportaDados
     "PERCIVASUBSTRIBSAIDA, PERCIVASUBSTRIBSAIDA1, PERCIVASUBSTRIBSAIDA2, PERCIVASUBSTRIBSAIDA3, " +
     "PERCIVASUBSTRIBSAIDA4, IDPRODUTOJAVA, TIPOSINC, IMPORTAPRODECOM, IDPRODUTOECOM, IAT, CODENQIPI, " +
     "CODNATRECEITA, IDNATRECEITA, CODCEST, TIPOMATEREMBA, IDPARCEIRO, TIPOEQPREDUCAOBASEDIFAL, " +
-    "CODSELFCOLOR, PERCENTDESCTOPROMOCAOP, PERCENTDESCTOPROMOCAO, CODSHOTCOLOR, MARKUPPRECO1, " +
+    "CODSELFCOLOR, PERCENTDESCTOPROMOCAO, CODSHOTCOLOR, MARKUPPRECO1, " +
     "MARKUPPRECO2, MARKUPPRECO3, MARKUPPRECO4, ESCALARELEVANTE, CONVERSAOETIQUETADEPRECOS, " +
     "UNIDADEAPOSCONVERTER, CODREGISTROANVISA, SEF, TESTEDOGERABANCO, PASSAPELOLAUDO, PERCGLPDERIVADO, " +
     "PERCGASNATURAL, PERCGASNATURALINTERNACIONAL, IDIMPOSTOPRODUTOJAVA)VALUES (@CODPROD, @ATIVO, @REFERENCIA, " +
@@ -322,7 +333,7 @@ namespace ExportaDados
     "@CAMPOLIVRE1, @CAMPOLIVRE2, @CAMPOLIVRE3, @CAMPOLIVRE4, @PRINCIPALFORNEC, @NOTAULTENT1, " +
     "@NOTAULTENT2, @NOTAULTENT3, @CONTROLESERIE, @CODPRODBAIXA, @FATORCONVBAIXA, @MULTDIVBAIXA, " +
     "@CODFRETE, @DTCADASTRO, @DESCRICAOPRECO, @PRECO2, @DESCRICAOPRECO2, @PRECO3, @DESCRICAOPRECO3, " +
-    "@LUCRO2, LUCRO3, @ITEMPORTARIA790, @ENVIADO, @PRECODOLAR, @DATAULTALTERACAO, @PERCPERDA, " +
+    "@LUCRO2, @LUCRO3, @ITEMPORTARIA790, @ENVIADO, @PRECODOLAR, @DATAULTALTERACAO, @PERCPERDA, " +
     "@PRECOPROMO, @DATAINIPROMO, @DATAFIMPROMO, @SUBSTRIBSAIDA, @PERCBASESUBSTRIBSAIDA, " +
     "@PERCICMSSUBSTRIBSAIDA, @TEMSUBITENS, @CODSEGMENTOSUBTRIBSAIDA, @ALIQICMSDIVERSOS, " +
     "@BASEICMSDIVERSOS, @CODTRIBUTDIVERSOS, @MENSAGEMDIVERSOS, @TIPODIVERSOS, @CONTACXA, " +
@@ -334,16 +345,16 @@ namespace ExportaDados
     "@SUBSTRIBSAIDAR2, @PERCBASESUBSTRIBSAIDAR2, @PERCICMSSUBSTRIBSAIDAR2, @SUBSTRIBSAIDAR3, " +
     "@PERCBASESUBSTRIBSAIDAR3, @PERCICMSSUBSTRIBSAIDAR3, @DESCONTOMAXIMO, @TIPOMEDICAMENTO, " +
     "@DESCPERCPADRAO, @LUCROPREVISTO, @REDUTOR, @ITEMPORTARIAFORAUF, @DATAULTREAJUSTE, " +
-    "@PRECOANTERIOR, @CODVOLUME, @FRACIONADO, @CODGENEROITEM, @CUSTOOPERC, @PERCIVA, VALORIPI, " +
+    "@PRECOANTERIOR, @CODVOLUME, @FRACIONADO, @CODGENEROITEM, @CUSTOOPERC, @PERCIVA, @VALORIPI, " +
     "@TIPOENTREGA, @LIMINILOTEENTREGA, @LIMFIMLOTEENTREGA, @CONSIDERACOMISSAO, @MULTIPLO, " +
     "@UNIDADEMULTIPLO, @SUBSTRIBSAIDAR4, @PERCBASESUBSTRIBSAIDAR4, @PERCICMSSUBSTRIBSAIDAR4, " +
     "@TIPOLISTA, @CODPRODPRODUCAO, @FARMACIAPOPULAR, @CFOPDENTROUF, @CFOPFORAUF, @CODPRODPAI, " +
-    "CODFAMILIA, CODTIPOPRODUTO, CODPRODANP, VERSION, AGROTOXICO, CODIGOMAPA, CODIGOEMBALAGEM, " +
+    "@CODFAMILIA, @CODTIPOPRODUTO, @CODPRODANP, @VERSION, @AGROTOXICO, @CODIGOMAPA, @CODIGOEMBALAGEM, " +
     "@ETQPRECOBASE, @ETQPARCELAMENTO, @ETQTXMES, @ETQINFTXMES, @ETQINFPRECOBASE, @ETQINFPRECOAPRAZO, " +
     "@ETQINFTXDIA, @PERCIVASUBSTRIBSAIDA, @PERCIVASUBSTRIBSAIDA1, @PERCIVASUBSTRIBSAIDA2, " +
     "@PERCIVASUBSTRIBSAIDA3, @PERCIVASUBSTRIBSAIDA4, @IDPRODUTOJAVA, @TIPOSINC, @IMPORTAPRODECOM, " +
     "@IDPRODUTOECOM, @IAT, @CODENQIPI, @CODNATRECEITA, @IDNATRECEITA, @CODCEST, @TIPOMATEREMBA, " +
-    "@IDPARCEIRO, @TIPOEQPREDUCAOBASEDIFAL, @CODSELFCOLOR, @PERCENTDESCTOPROMOCAOP, " +
+    "@IDPARCEIRO, @TIPOEQPREDUCAOBASEDIFAL, @CODSELFCOLOR, " +
     "@PERCENTDESCTOPROMOCAO, @CODSHOTCOLOR, @MARKUPPRECO1, @MARKUPPRECO2, @MARKUPPRECO3, " +
     "@MARKUPPRECO4, @ESCALARELEVANTE, @CONVERSAOETIQUETADEPRECOS, @UNIDADEAPOSCONVERTER, " +
     "@CODREGISTROANVISA, @SEF, @TESTEDOGERABANCO, @PASSAPELOLAUDO, @PERCGLPDERIVADO, @PERCGASNATURAL, " +
@@ -579,7 +590,6 @@ namespace ExportaDados
                     }
                     catch (Exception)
                     {
-
                         throw;
                     }
                 }

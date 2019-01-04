@@ -15,8 +15,8 @@ namespace ExportaDados
     {
         static void Main(string[] args)
         {
-            ProdutoRepository produtoRepository = new ProdutoRepository();
-            produtoRepository.InsertProduto();
+            ClienteRepository clienteRepository = new ClienteRepository();
+            clienteRepository.InsertCliente();
             Console.ReadKey();
         }
     }
