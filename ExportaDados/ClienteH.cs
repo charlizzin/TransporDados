@@ -136,67 +136,98 @@ namespace ExportaDados
     public class ClienteS : ClienteH { }
     public class ClienteRepository
     {
-        private readonly string sqlCliente = "Select * from cliente where cliente.dt_cadastro = @data order by codcliente";
+        private readonly string sqlClienteP = "Select * from cliente where cliente.dt_cadastro = @data order by codcliente";
+        private readonly string sqlClienteS = "Select * from cliente where cliente.dt_cadastro >= @data order by codcliente";
         private readonly string dataHoje = DateTime.Today.Date.ToString("dd/MM/yyyy").Replace("/", ".");
-
 
         public List<ClienteP> GetListaClientesP()
         {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
-            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
-            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
-            IEnumerable ClienteP = new FbConnection(new Conexao().conexao1).Query<ClienteP>(sqlCliente, new { data = dataHoje });
             List<ClienteP> listaClientes = new List<ClienteP>();
-            foreach (ClienteP itemP in ClienteP)
+            //Console.WriteLine("Buscando registros primarios na tabela CIDADES: ");
+            try
             {
-                listaClientes.Add(itemP);
+                DefaultTypeMap.MatchNamesWithUnderscores = true;
+                #region Comentario
+                //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+                //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+                //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
+                #endregion
+                IEnumerable ClienteP = new FbConnection(new Conexao().conexao1).Query<ClienteP>(sqlClienteP, new { data = dataHoje });
+                foreach (ClienteP itemP in ClienteP)
+                {
+                    listaClientes.Add(itemP);
+                }
+                //Console.WriteLine("OK!");
+            }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
             }
             return listaClientes;
         }
         public List<ClienteS> GetListaClientesS()
         {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
-            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
-            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
-            IEnumerable ClienteS = new FbConnection(new Conexao().conexao2).Query<ClienteS>(sqlCliente, new { data = dataHoje });
             List<ClienteS> listaClientes = new List<ClienteS>();
-            foreach (ClienteS itemS in ClienteS)
+            //Console.WriteLine("Buscando registros secundarios na tabela CIDADES: ");
+            try
             {
-                listaClientes.Add(itemS);
+                DefaultTypeMap.MatchNamesWithUnderscores = true;
+                #region dataAlvo
+                var dataHoje = DateTime.Now.Date;
+                var dataRetro = 7;
+                var dataAlvo = dataHoje.AddDays(-dataRetro).ToString("dd/MM/yyyy").Replace("/", ".");
+                #endregion
+                IEnumerable ClienteS = new FbConnection(new Conexao().conexao2).Query<ClienteS>(sqlClienteS, new { data = dataAlvo });
+                foreach (ClienteS itemS in ClienteS)
+                {
+                    listaClientes.Add(itemS);
+                }
+                //Console.WriteLine("OK!");
             }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+
             return listaClientes;
         }
         public List<dynamic> ResultCliente()
         {
             List<ClienteP> ClientesP = GetListaClientesP();
             List<ClienteS> ClientesS = GetListaClientesS();
-
             List<ClienteP> Resul = new List<ClienteP>();
-            foreach (var item in ClientesP)
+            //Console.WriteLine("Removendo registros de Clientes ja inclusos no banco secundario: ");
+            try
             {
-                Resul.Add(item);
-            }
-
-            foreach (var itemP in ClientesP)
-            {
-                foreach (var itemS in ClientesS)
+                foreach (var item in ClientesP)
                 {
-                    if (itemP.Codcliente.Equals(itemS.Codcliente))
+                    Resul.Add(item);
+                }
+
+                foreach (var itemP in ClientesP)
+                {
+                    foreach (var itemS in ClientesS)
                     {
-                        Resul.Remove(itemP);
-                        break;
+                        if (itemP.Codcliente.Equals(itemS.Codcliente))
+                        {
+                            Resul.Remove(itemP);
+                            break;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+            //Console.WriteLine("OK!");
             return Resul.Cast<dynamic>().ToList();
         }
         public void InsertCliente()
         {
             #region InsertCliente
-            string Insert = "INSERT INTO CLIENTE (CODCLIENTE, NOME, NOMEFANTASIA, ENDERECO, BAIRRO, CODCIDADE, " + 
-                "ESTADO, CEP, CGCCPF, INSCEST, PESSOA_FJ, CONTATO, FONE, FAX, CODCLASCLI, CODSEGMENTO, ENDERECOCOB, " + 
+            string Insert = "INSERT INTO CLIENTE (CODCLIENTE, NOME, NOMEFANTASIA, ENDERECO, BAIRRO, CODCIDADE, " +
+                "ESTADO, CEP, CGCCPF, INSCEST, PESSOA_FJ, CONTATO, FONE, FAX, CODCLASCLI, CODSEGMENTO, ENDERECOCOB, " +
                 "BAIRROCOB, CODCIDADECOB, ESTADOCOB, CEPCOB, CTCTBRED, NOMESOCIO, CODTRANSPT, CODVENDEND1, ENDERECOENT, " +
                 "BAIRROENT, CODCIDADEENT, ESTADOENT, CEPENT, DT_CADASTRO, DT_PRIMVENDA, DT_ULTVENDA, CODPRAZO, EMAIL, " +
                 "CAMPOLIVRE1, CAMPOLIVRE2, CAMPOLIVRE3, CAMPOLIVRE4, HOMEPAGE, CLIBLOQUEADO, ATIVO, DT_VALCAD, " +
@@ -226,15 +257,14 @@ namespace ExportaDados
                 "@SINCRONIZADO, @CODMUNICIPIO, @TIPOCONTRATO, @DIAVENCCONTRATO, @DATABASECONTRATO, @QTDSALARIOMINIMO, " +
                 "@VALORCONTRATO, @CODEMPRESACLI, @DATACANCELACONTRATO, @EXIGENF, @CODMOTIVOCANCCONTRATO)";
             #endregion
-
             Conexao conexao = new Conexao();
             FbConnection fbConnection = new FbConnection(conexao.conexao2);
             ClienteS cliente = new ClienteS();
             var result = ResultCliente();
 
-            foreach (var item in result)
+            if (result.Count != 0)
             {
-                if (result.Count != 0)
+                foreach (var item in result)
                 {
                     try
                     {
@@ -361,15 +391,25 @@ namespace ExportaDados
                             Senhainstalacao = item.Senhainstalacao,
                             Codmotivocanccontrato = item.Codmotivocanccontrato
                         };
+                        Console.WriteLine("Inserindo o registro: " + cliente.Codcliente + "-" + cliente.Nome);
                         fbConnection.Execute(Insert, cliente);
+                        Console.WriteLine("Registro inserido com sucesso!");
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-
-                        throw;
+                        MsgErro(ex);
                     }
                 }
             }
+            else
+            {
+                Console.WriteLine("Não a novos CLIENTES a serem inseridos!");
+            }
+        }
+        private static void MsgErro(Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
         }
     }
 }

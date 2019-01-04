@@ -24,30 +24,49 @@ namespace ExportaDados
     public class CidadeRespository
     {
         private readonly string sqlCidade = "Select * from cidades order by codcidade";
-
         public List<CidadesP> GetListaCidadesP()
         {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
-            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
-            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
-            IEnumerable CidadeP = new FbConnection(new Conexao().conexao1).Query<CidadesP>(sqlCidade);
+            //Console.WriteLine("Buscando registros de cidades no banco primario: ");
             List<CidadesP> listaCidades = new List<CidadesP>();
-            foreach (CidadesP itemP in CidadeP)
+            try
             {
-                listaCidades.Add(itemP);
+                DefaultTypeMap.MatchNamesWithUnderscores = true;
+                #region Comentario DefaultTypeMap
+                //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
+                //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
+                //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
+                #endregion
+                IEnumerable CidadeP = new FbConnection(new Conexao().conexao1).Query<CidadesP>(sqlCidade);
+                foreach (CidadesP itemP in CidadeP)
+                {
+                    listaCidades.Add(itemP);
+                }
+                //Console.WriteLine("OK!");
+            }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
             }
             return listaCidades;
         }
 
         public List<CidadesS> GetListaCidadesS()
         {
-            IEnumerable CidadeS = new FbConnection(new Conexao().conexao2).Query<CidadesS>(sqlCidade);
+            //Console.WriteLine("Buscando registros de cidades no banco secundario: ");
             List<CidadesS> listaCidades = new List<CidadesS>();
-            foreach (CidadesS itemS in CidadeS)
+            try
             {
-                listaCidades.Add(itemS);
+                IEnumerable CidadeS = new FbConnection(new Conexao().conexao2).Query<CidadesS>(sqlCidade);
+                foreach (CidadesS itemS in CidadeS)
+                {
+                    listaCidades.Add(itemS);
+                }
             }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+            //Console.WriteLine("OK!");
             return listaCidades;
         }
 
@@ -55,24 +74,32 @@ namespace ExportaDados
         {
             List<CidadesP> cidadesP = GetListaCidadesP();
             List<CidadesS> cidadesS = GetListaCidadesS();
-
             List<CidadesP> Resul = new List<CidadesP>();
-            foreach (var item in cidadesP)
+            //Console.WriteLine("Removendo registros ja inclusos no banco secundario: ");
+            try
             {
-                Resul.Add(item);
-            }
-
-            foreach (var itemP in cidadesP)
-            {
-                foreach (var itemS in cidadesS)
+                foreach (var item in cidadesP)
                 {
-                    if (itemP.CodCidade.Equals(itemS.CodCidade))
+                    Resul.Add(item);
+                }
+
+                foreach (var itemP in cidadesP)
+                {
+                    foreach (var itemS in cidadesS)
                     {
-                        Resul.Remove(itemP);
-                        break;
+                        if (itemP.CodCidade.Equals(itemS.CodCidade))
+                        {
+                            Resul.Remove(itemP);
+                            break;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+            //Console.WriteLine("OK!");
             return Resul.Cast<dynamic>().ToList();
         }
 
@@ -85,9 +112,9 @@ namespace ExportaDados
             CidadesS cidade = new CidadesS();
             var result = ResultCidade();
 
-            foreach (var item in result)
+            if (result.Count != 0)
             {
-                if (result.Count != 0)
+                foreach (var item in result)
                 {
                     try
                     {
@@ -99,15 +126,26 @@ namespace ExportaDados
                             CodMunicipio = item.CodMunicipio,
                             CodSiafi = item.CodSiafi
                         };
+                        Console.WriteLine("Tentando inserir o registro: " + cidade.CodCidade + " - " + cidade.Cidade);
                         fbConnection.Execute(Insert, cidade);
+                        Console.WriteLine("Registro inserido com sucesso!");
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-
-                        throw;
+                        MsgErro(ex);
                     }
                 }
             }
+            else
+            {
+                Console.WriteLine("Não a novas CIDADES a ser inserida!!");
+            } 
+
+        }
+        private static void MsgErro(Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
         }
     }
 

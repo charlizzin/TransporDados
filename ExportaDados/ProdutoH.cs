@@ -219,68 +219,91 @@ namespace ExportaDados
         public double? Percglpderivado { get; set; } // double precision
         public double? Percgasnatural { get; set; } // double precision
         public double? Percgasnaturalinternacional { get; set; } // double precision
-        public int? Idimpostoprodutojava { get; set; } // integer
 
     }
     public class ProdutoP : ProdutoH { }
     public class ProdutoS : ProdutoH { }
     public class ProdutoRepository
     {
-        private readonly string sqlProduto = "Select * from produto where produto.dt_cadastro = @data order by codprod";
+        private readonly string sqlProdutoP = "Select * from produto where produto.dt_cadastro = @data order by codprod";
+        private readonly string sqlProdutoS = "Select * from produto where produto.dt_cadastro >= @data order by codprod";
         private readonly string dataHoje = DateTime.Today.Date.ToString("dd/MM/yyyy").Replace("/", ".");
-
 
         public List<ProdutoP> GetListaProdutosP()
         {
-
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
-            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
-            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
-            IEnumerable ProdutoP = new FbConnection(new Conexao().conexao1).Query<ProdutoP>(sqlProduto, new { data = dataHoje });
             List<ProdutoP> listaProdutos = new List<ProdutoP>();
-            foreach (ProdutoP itemP in ProdutoP)
+            //Console.WriteLine("Buscando registros primarios na tabela PRODUTO: ");
+            try
             {
-                listaProdutos.Add(itemP);
+                DefaultTypeMap.MatchNamesWithUnderscores = true;
+                IEnumerable ProdutoP = new FbConnection(new Conexao().conexao1).Query<ProdutoP>(sqlProdutoP, new { data = dataHoje });
+                foreach (ProdutoP itemP in ProdutoP)
+                {
+                    listaProdutos.Add(itemP);
+                }
+                //Console.WriteLine("OK!");
+            }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
             }
             return listaProdutos;
         }
         public List<ProdutoS> GetListaProdutosS()
         {
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-            //Com essa funcao ativada o DAPPER consegui identificar que DT_CADASTRO é a mesma coisa que DTCADASTRO
-            //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
-            //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
-            IEnumerable ProdutoS = new FbConnection(new Conexao().conexao2).Query<ProdutoS>(sqlProduto, new { data = dataHoje });
             List<ProdutoS> listaProdutos = new List<ProdutoS>();
-            foreach (ProdutoS itemS in ProdutoS)
+            //Console.WriteLine("Buscando registros secundaria na tabela PRODUTO: ");
+            try
             {
-                listaProdutos.Add(itemS);
+                DefaultTypeMap.MatchNamesWithUnderscores = true;
+                #region dataAlvo
+                var dataHoje = DateTime.Now.Date;
+                var dataRetro = 7;
+                var dataAlvo = dataHoje.AddDays(-dataRetro).ToString("dd/MM/yyyy").Replace("/", ".");
+                #endregion
+                IEnumerable ProdutoS = new FbConnection(new Conexao().conexao2).Query<ProdutoS>(sqlProdutoS, new { data = dataAlvo });
+                foreach (ProdutoS itemS in ProdutoS)
+                {
+                    listaProdutos.Add(itemS);
+                }
+                //Console.WriteLine("OK!");
             }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+
             return listaProdutos;
         }
         public List<dynamic> ResultProduto()
         {
             List<ProdutoP> ProdutosP = GetListaProdutosP();
             List<ProdutoS> ProdutosS = GetListaProdutosS();
-
             List<ProdutoP> Resul = new List<ProdutoP>();
-            foreach (var item in ProdutosP)
+            //Console.WriteLine("Removendo registros de Produtos ja inclusos no banco secundario: ");
+            try
             {
-                Resul.Add(item);
-            }
-
-            foreach (var itemP in ProdutosP)
-            {
-                foreach (var itemS in ProdutosS)
+                foreach (var item in ProdutosP)
                 {
-                    if (itemP.Codprod.Equals(itemS.Codprod))
+                    Resul.Add(item);
+                }
+                foreach (var itemP in ProdutosP)
+                {
+                    foreach (var itemS in ProdutosS)
                     {
-                        Resul.Remove(itemP);
-                        break;
+                        if (itemP.Codprod.Equals(itemS.Codprod))
+                        {
+                            Resul.Remove(itemP);
+                            break;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+            //Console.WriteLine("OK!");
             return Resul.Cast<dynamic>().ToList();
         }
         public void InsertProduto()
@@ -320,7 +343,7 @@ namespace ExportaDados
     "CODSELFCOLOR, PERCENTDESCTOPROMOCAO, CODSHOTCOLOR, MARKUPPRECO1, " +
     "MARKUPPRECO2, MARKUPPRECO3, MARKUPPRECO4, ESCALARELEVANTE, CONVERSAOETIQUETADEPRECOS, " +
     "UNIDADEAPOSCONVERTER, CODREGISTROANVISA, SEF, TESTEDOGERABANCO, PASSAPELOLAUDO, PERCGLPDERIVADO, " +
-    "PERCGASNATURAL, PERCGASNATURALINTERNACIONAL, IDIMPOSTOPRODUTOJAVA)VALUES (@CODPROD, @ATIVO, @REFERENCIA, " +
+    "PERCGASNATURAL, PERCGASNATURALINTERNACIONAL)VALUES (@CODPROD, @ATIVO, @REFERENCIA, " +
     "@REFFABRICANTE, @DESCRICAO, @DESCRICAO2, @DESCRICAO3, @CODGRUPO, @CODSUBGRUPO, @TIPOPROD, @ESTMINIMO, " +
     "@DIASESTMINIMO, @ESTMAXIMO, @DIASESTMAXIMO, @CODCLASFIS, @ALIQIPI, @ALIQISS, @ALIQICMSREG00, " +
     "@BASEICMSREG00, @CODTRIBUT00, @MENSAGEM00, @ALIQICMSREG01, @BASEICMSREG01, @CODTRIBUT01, " +
@@ -358,18 +381,16 @@ namespace ExportaDados
     "@PERCENTDESCTOPROMOCAO, @CODSHOTCOLOR, @MARKUPPRECO1, @MARKUPPRECO2, @MARKUPPRECO3, " +
     "@MARKUPPRECO4, @ESCALARELEVANTE, @CONVERSAOETIQUETADEPRECOS, @UNIDADEAPOSCONVERTER, " +
     "@CODREGISTROANVISA, @SEF, @TESTEDOGERABANCO, @PASSAPELOLAUDO, @PERCGLPDERIVADO, @PERCGASNATURAL, " +
-    "@PERCGASNATURALINTERNACIONAL, @IDIMPOSTOPRODUTOJAVA)";
+    "@PERCGASNATURALINTERNACIONAL)";
             #endregion
-
-
             Conexao conexao = new Conexao();
             FbConnection fbConnection = new FbConnection(conexao.conexao2);
             ProdutoP produto = new ProdutoP();
             var result = ResultProduto();
 
-            foreach (var item in result)
+            if (result.Count != 0)
             {
-                if (result.Count != 0)
+                foreach (var item in result)
                 {
                     try
                     {
@@ -584,16 +605,27 @@ namespace ExportaDados
                             Passapelolaudo = item.Passapelolaudo,
                             Percglpderivado = item.Percglpderivado,
                             Percgasnatural = item.Percgasnatural,
-                            Percgasnaturalinternacional = item.Percgasnaturalinternacional,
+                            Percgasnaturalinternacional = item.Percgasnaturalinternacional
                         };
+                        Console.WriteLine("Inserindo o registro: " + produto.Codprod + " - " + produto.Descricao);
                         fbConnection.Execute(Insert, produto);
+                        Console.WriteLine("Registro inserido com sucesso!");
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        throw;
+                        MsgErro(ex);
                     }
                 }
             }
+            else
+            {
+                Console.WriteLine("Não a novos PRODUTOS a serem inseridos!");
+            }
+        }
+        private static void MsgErro(Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
         }
     }
 }
