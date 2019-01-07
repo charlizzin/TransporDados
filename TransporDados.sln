@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransporDados", "TransporDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExportaDados", "ExportaDados\ExportaDados.csproj", "{71E76144-57E9-4018-9096-046029B9F1EA}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "InstaladorExportaDados", "InstaladorExportaDados\InstaladorExportaDados.vdproj", "{79ED8306-8F4C-40E7-B32D-F84F49A43338}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,8 +21,6 @@ Global
 		{71E76144-57E9-4018-9096-046029B9F1EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71E76144-57E9-4018-9096-046029B9F1EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71E76144-57E9-4018-9096-046029B9F1EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79ED8306-8F4C-40E7-B32D-F84F49A43338}.Debug|Any CPU.ActiveCfg = Debug
-		{79ED8306-8F4C-40E7-B32D-F84F49A43338}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

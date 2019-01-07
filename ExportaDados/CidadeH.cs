@@ -36,7 +36,9 @@ namespace ExportaDados
                 //https://stackoverflow.com/questions/34533349/how-to-get-dapper-to-ignore-remove-underscores-in-field-names-when-mapping/34536829#34536829
                 //https://stackoverflow.com/questions/8902674/manually-map-column-names-with-class-properties
                 #endregion
-                IEnumerable CidadeP = new FbConnection(new Conexao().conexao1).Query<CidadesP>(sqlCidade);
+                Conexao conexao = new Conexao();
+                FbConnection fbConnection = new FbConnection(conexao.conexao1);
+                IEnumerable CidadeP = fbConnection.Query<CidadeH>(sqlCidade);
                 foreach (CidadesP itemP in CidadeP)
                 {
                     listaCidades.Add(itemP);
@@ -49,7 +51,6 @@ namespace ExportaDados
             }
             return listaCidades;
         }
-
         public List<CidadesS> GetListaCidadesS()
         {
             //Console.WriteLine("Buscando registros de cidades no banco secundario: ");
@@ -69,7 +70,6 @@ namespace ExportaDados
             //Console.WriteLine("OK!");
             return listaCidades;
         }
-
         public List<dynamic> ResultCidade()
         {
             List<CidadesP> cidadesP = GetListaCidadesP();
@@ -102,14 +102,9 @@ namespace ExportaDados
             //Console.WriteLine("OK!");
             return Resul.Cast<dynamic>().ToList();
         }
-
         public void InsertCidade()
         {
-            string Insert = "INSERT INTO CIDADES (CODCIDADE, CIDADE, ESTADO, CODMUNICIPIO, CODSIAFI)VALUES (@CODCIDADE, @CIDADE, @ESTADO, @CODMUNICIPIO, @CODSIAFI)";
-
-            Conexao conexao = new Conexao();
-            FbConnection fbConnection = new FbConnection(conexao.conexao2);
-            CidadesS cidade = new CidadesS();
+            string InsertCliente = "INSERT INTO CIDADES (CODCIDADE, CIDADE, ESTADO, CODMUNICIPIO, CODSIAFI)VALUES (@CODCIDADE, @CIDADE, @ESTADO, @CODMUNICIPIO, @CODSIAFI)";
             var result = ResultCidade();
 
             if (result.Count != 0)
@@ -118,6 +113,8 @@ namespace ExportaDados
                 {
                     try
                     {
+
+                        CidadesS cidade = new CidadesS();
                         cidade = new CidadesS
                         {
                             CodCidade = item.CodCidade,
@@ -127,7 +124,8 @@ namespace ExportaDados
                             CodSiafi = item.CodSiafi
                         };
                         Console.WriteLine("Tentando inserir o registro: " + cidade.CodCidade + " - " + cidade.Cidade);
-                        fbConnection.Execute(Insert, cidade);
+                        FbConnection fbConnection = new FbConnection(new Conexao().conexao2);
+                        fbConnection.Execute(InsertCliente, cidade);
                         Console.WriteLine("Registro inserido com sucesso!");
                     }
                     catch (Exception ex)
@@ -142,12 +140,40 @@ namespace ExportaDados
             } 
 
         }
+        public void UpdateCidade()
+        {
+            List<CidadesP> cidadesP = GetListaCidadesP();
+            List<CidadesS> cidadesS = GetListaCidadesS();
+            List<CidadesP> Resul = new List<CidadesP>();
+            try
+            {
+                foreach (var item in cidadesP)
+                {
+                    Resul.Add(item);
+                }
+
+                foreach (var itemP in cidadesP)
+                {
+                    foreach (var itemS in cidadesS)
+                    {
+                        if (itemP.CodCidade.Equals(itemS.CodCidade) && itemP.Cidade.Equals(itemS.Cidade))
+                        {
+                            Resul.Remove(itemP);
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MsgErro(ex);
+            }
+        }
         private static void MsgErro(Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex.Message);
         }
+
     }
-
-
 }
