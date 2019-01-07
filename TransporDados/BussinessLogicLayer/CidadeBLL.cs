@@ -101,7 +101,7 @@ namespace TransporDados
             }
             else
             {
-                Console.WriteLine("Sem cadastros novos!!");
+                Console.WriteLine("Nao existe novos CIDADES!!!!");
             }
         }
         public void UpdateCidade()

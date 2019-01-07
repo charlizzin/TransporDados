@@ -105,7 +105,7 @@ namespace TransporDados.BussinessLogicLayer
             }
             else
             {
-                Console.WriteLine("Sem cadastros novos!!");
+                Console.WriteLine("Nao existe novos CLIENTES!!");
             }
         }
 

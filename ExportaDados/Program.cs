@@ -20,7 +20,7 @@ namespace ExportaDados
         {
             CidadeRespository cidadeRespository = new CidadeRespository();
             cidadeRespository.UpdateCidade();
-            //Timer t = new Timer(TimerCallback, null, 0, 180000);
+            Timer t = new Timer(TimerCallback, null, 0, 180000);
             Console.ReadKey();
         }
         private static void TimerCallback(Object o)

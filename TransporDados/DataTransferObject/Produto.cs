@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper.Contrib.Extensions;
 
 namespace TransporDados.DataTransferObject
 {
+    [Table("PRODUTO")]
     public class Produto
     {
         public string Codprod { get; set; } // char(6)
@@ -74,9 +76,9 @@ namespace TransporDados.DataTransferObject
         public string Campolivre3 { get; set; } // varchar(50)
         public string Campolivre4 { get; set; } // varchar(50)
         public string Principalfornec { get; set; } // varchar(6)
-        public string Notaultent1 { get; set; } // varchar(10)
-        public string Notaultent2 { get; set; } // varchar(10)
-        public string Notaultent3 { get; set; } // varchar(10)
+        public string Nota_ult_ent1 { get; set; } // varchar(10)
+        public string Nota_ult_ent2 { get; set; } // varchar(10)
+        public string Nota_ult_ent3 { get; set; } // varchar(10)
         public string Controleserie { get; set; } // varchar(1)
         public string Codprodbaixa { get; set; } // varchar(6)
         public double? Fatorconvbaixa { get; set; } // double precision
@@ -147,13 +149,13 @@ namespace TransporDados.DataTransferObject
         public double? Redutor { get; set; } // double precision
         public string Itemportariaforauf { get; set; } // varchar(2)
         public DateTime? Data_ult_reajuste { get; set; } // timestamp
-        public double? Precoanterior { get; set; } // double precision
+        public double? Preco_anterior { get; set; } // double precision
         public string Observacao { get; set; } // blob sub_type 1
         public string Codvolume { get; set; } // varchar(3)
         public char? Fracionado { get; set; } // varchar(1)
         public string Codgeneroitem { get; set; } // varchar(2)
         public double? Custooperc { get; set; } // double precision
-        public double? Perciva { get; set; } // double precision
+        public double? Perc_iva { get; set; } // double precision
         public double? Valoripi { get; set; } // double precision
         public string Tipoentrega { get; set; } // varchar(1)
         public double? Liminiloteentrega { get; set; } // double precision
