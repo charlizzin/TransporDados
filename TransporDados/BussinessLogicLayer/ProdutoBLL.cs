@@ -92,7 +92,7 @@ namespace TransporDados.BussinessLogicLayer
             {
                 try
                 {
-                    Console.WriteLine("Inserindo os registros: ");
+                    Console.WriteLine(" Inserindo os registros: ");
                     foreach (var item in listaProduto)
                     {
                         Console.WriteLine("         " + item.Codprod + " - " + item.Descricao);
@@ -100,7 +100,6 @@ namespace TransporDados.BussinessLogicLayer
                     new FbConnection(
                         new Conexao().conexao2)
                         .Insert(listaProduto);
-                    Console.WriteLine("Registros inseridos com sucesso!");
                 }
                 catch (Exception ex)
                 {
@@ -109,7 +108,7 @@ namespace TransporDados.BussinessLogicLayer
             }
             else
             {
-                Console.WriteLine("Nao existe novos PRODUTOS!!");
+                Console.WriteLine(" Nao existe novos PRODUTOS!!");
             }
         }
 
@@ -117,17 +116,17 @@ namespace TransporDados.BussinessLogicLayer
         {
             string sqlUpdate = "UPDATE PRODUTO SET DESCRICAOPRECO = @DESCRICAOPRECO, PRECO = @PRECO, " +
                 " DESCRICAOPRECO2 = @DESCRICAOPRECO2, PRECO2 = @PRECO2, DESCRICAOPRECO3 = @DESCRICAOPRECO3, PRECO3 = @PRECO3," +
-                " DESCRICAOPRECO4 = @DESCRICAOPRECO4, PRECO4 = @PRECO4 WHERE (DATA_ULT_ALTERACAO = @DATA_ULT_ALTERACAO)";
+                " DESCRICAOPRECO4 = @DESCRICAOPRECO4, PRECO4 = @PRECO4 WHERE (CODPROD = @CODPROD)";
             var listaAtual = BuscaProduto(
-                new Conexao().conexao1, true,sqlProdutoU)
-                .Cast<dynamic>().ToList();
+                new Conexao().conexao1, true,sqlProdutoU);
             if (listaAtual.Count != 0)
             {
                 try
                 {
+                    Console.WriteLine(" Atualizando os registros: ");
                     foreach (var item in listaAtual)
                     {
-                        Console.WriteLine("Atualizando o produto: " + item.Codprod + " - " + item.Descricao);
+                        Console.WriteLine("         " + item.Codprod + " - " + item.Descricao);
                         new FbConnection(
                             new Conexao().conexao2)
                             .Execute(sqlUpdate, new Produto
@@ -140,10 +139,10 @@ namespace TransporDados.BussinessLogicLayer
                                 Preco3 = item.Preco3,
                                 Descricaopreco4 = item.Descricaopreco4,
                                 Preco4 = item.Preco4,
-                                Data_ult_alteracao = item.Data_ult_alteracao
+                                Codprod = item.Codprod
                             });
-                        Console.WriteLine("Produto atualizada!!");
                     }
+                    Console.WriteLine();
                 }
                 catch (Exception ex)
                 {
@@ -152,13 +151,14 @@ namespace TransporDados.BussinessLogicLayer
             }
             else
             {
-                Console.WriteLine("Nao possui registros para atualizacao!!");
+                Console.WriteLine(" Nao possui registros de Produto para atualizacao!!");
             }
         }
         public static void MsgErro(Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex.Message);
+            Console.ForegroundColor = ConsoleColor.Green;
         }
 
     }

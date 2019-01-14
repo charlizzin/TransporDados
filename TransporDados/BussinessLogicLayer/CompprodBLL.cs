@@ -13,7 +13,9 @@ namespace TransporDados.BussinessLogicLayer
 {
     public class CompprodBLL : ICompprodUI<CompProd>
     {
-        private readonly string sqlCompProd = "Select * from compprod where datacustocalc = @datacustocalc and codempresa = '00' order by codprod";
+        private readonly string sqlCompProd = "select com.codprod, pro.descricao, com.precocusto from compprod com " +
+            "inner join produto pro on pro.codprod = com.codprod and com.codempresa = '00' " +
+            "where com.datacustocalc = @datacustocalc order by com.codprod";
         private readonly string dataHoje = DateTime.Today.Date.ToString("dd/MM/yyyy").Replace("/", ".");
         public List<CompProd> BuscaCompprod(string conexao)
         {
@@ -54,8 +56,10 @@ namespace TransporDados.BussinessLogicLayer
             {
                 try
                 {
+                    Console.WriteLine(" Atualizando PrecoCusto da lista de produtos: ");
                     foreach (var item in listaAtual)
                     {
+                        Console.WriteLine("         " + item.Codprod + " - " + item.Descricao);
                         new FbConnection(
                             new Conexao().conexao2)
                             .Execute(sqlUpdate, new CompProd
@@ -66,17 +70,21 @@ namespace TransporDados.BussinessLogicLayer
                             });
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
-                    throw;
+                    MsgErro(ex);
                 }
+            }
+            else
+            {
+                Console.WriteLine(" Não existe PrecoCusto para ser atualizado");
             }
         }
         public static void MsgErro(Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex.Message);
+            Console.ForegroundColor = ConsoleColor.Green;
         }
     }
 }

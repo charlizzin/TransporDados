@@ -88,7 +88,7 @@ namespace TransporDados.BussinessLogicLayer
             {
                 try
                 {
-                    Console.WriteLine("Inserindo os registros: ");
+                    Console.WriteLine(" Inserindo os registros: ");
                     foreach (var item in listaCliente)
                     {
                         Console.WriteLine("         " + item.Codcliente + " - " + item.Nome);
@@ -96,7 +96,6 @@ namespace TransporDados.BussinessLogicLayer
                     new FbConnection(
                         new Conexao().conexao2)
                         .Insert(listaCliente);
-                    Console.WriteLine("Registros inseridos com sucesso!");
                 }
                 catch (Exception ex)
                 {
@@ -105,7 +104,7 @@ namespace TransporDados.BussinessLogicLayer
             }
             else
             {
-                Console.WriteLine("Nao existe novos CLIENTES!!");
+                Console.WriteLine(" Nao existe novos CLIENTES!!");
             }
         }
 
@@ -117,6 +116,7 @@ namespace TransporDados.BussinessLogicLayer
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex.Message);
+            Console.ForegroundColor = ConsoleColor.Green;
         }
 
     }

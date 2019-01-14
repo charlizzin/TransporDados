@@ -16,7 +16,7 @@ namespace TransporDados
             string sqlCidade = "Select * from cidades order by codcidade";
             try
             {
-                IEnumerable cidade = 
+                IEnumerable cidade =
                     new FbConnection(conexao)
                     .Query<Cidades>(sqlCidade);
                 foreach (Cidades item in cidade)
@@ -84,7 +84,7 @@ namespace TransporDados
             {
                 try
                 {
-                    Console.WriteLine("Inserindo os registros: ");
+                    Console.WriteLine(" Inserindo os registros: ");
                     foreach (var item in listaCidade)
                     {
                         Console.WriteLine("         " + item.CodCidade + " - " + item.Cidade);
@@ -92,7 +92,6 @@ namespace TransporDados
                     new FbConnection(
                         new Conexao().conexao2)
                         .Insert(listaCidade);
-                    Console.WriteLine("Registros inseridos com sucesso!");
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +100,7 @@ namespace TransporDados
             }
             else
             {
-                Console.WriteLine("Nao existe novos CIDADES!!!!");
+                Console.WriteLine(" Nao existe novas CIDADES!!!!");
             }
         }
         public void UpdateCidade()
@@ -109,15 +108,15 @@ namespace TransporDados
             string sqlUpdate = "UPDATE CIDADES SET CIDADE = @CIDADE WHERE (CODCIDADE = @CODCIDADE);";
             var listaAtual = ComparaBusca(
                                 BuscaCidade(new Conexao().conexao1),
-                                BuscaCidade(new Conexao().conexao2), true)
-                                .Cast<dynamic>().ToList();
+                                BuscaCidade(new Conexao().conexao2), true);
             if (listaAtual.Count != 0)
             {
                 try
                 {
+                    Console.WriteLine(" Atualizando a cidade: ");
                     foreach (var item in listaAtual)
                     {
-                        Console.WriteLine("Atualizando a cidade: " + item.CodCidade + " - " + item.Cidade);
+                        Console.WriteLine("             " + item.CodCidade + " - " + item.Cidade);
                         new FbConnection(
                             new Conexao().conexao2)
                             .Execute(sqlUpdate, new Cidades
@@ -125,7 +124,6 @@ namespace TransporDados
                                 CodCidade = item.CodCidade,
                                 Cidade = item.Cidade
                             });
-                        Console.WriteLine("Cidade atualizada!!");
                     }
                 }
                 catch (Exception ex)
@@ -135,13 +133,14 @@ namespace TransporDados
             }
             else
             {
-                Console.WriteLine("Nao possui registros para atualizacao!!");
+                Console.WriteLine(" Nao possui registros de Cidades para atualizacao!!");
             }
         }
         public static void MsgErro(Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex.Message);
+            Console.ForegroundColor = ConsoleColor.Green;
         }
     }
 }

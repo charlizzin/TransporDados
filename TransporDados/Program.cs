@@ -16,7 +16,7 @@ namespace TransporDados
         {
             // Display the date/time when this method got called.
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Executado as : " + DateTime.Now);
+            Console.WriteLine(" Executado as : " + DateTime.Now);
             new CidadeBLL().InserirCidade();
             new ClienteBLL().InserirCliente();
             new ProdutoBLL().InserirProduto();
@@ -28,7 +28,7 @@ namespace TransporDados
         {
             // Display the date/time when this method got called.
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Executado as : " + DateTime.Now);
+            Console.WriteLine(" Executado as : " + DateTime.Now);
             new CidadeBLL().UpdateCidade();
             //new ClienteBLL().UpdateCliente();
             new ProdutoBLL().UpdateProduto();
